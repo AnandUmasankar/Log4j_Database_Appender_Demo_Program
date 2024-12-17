@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <!-- Console Appender (logs INFO, DEBUG, ERROR to console) -->
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+
+        <!-- JDBC Appender (logs ERROR level only to database) -->
+        <JDBC name="dbLogsStore" tableName="TRANSACTION_ERROR_LOG">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <ConnectionFactory class="com.demo.log4j.config.ConnectionFactory" method="getDatabaseConnection" />
+            <Column name="LOG_ID" literal="1" />
+            <Column name="CREATED_DATE" literal="CURRENT_TIMESTAMP" />
+            <Column name="CLASS_INFO" pattern="%logger" />
+            <Column name="LOGGER_LEVEL" pattern="%level" />
+            <Column name="MESSAGE" pattern="%message" isClob="true" />
+            <Column name="EXCEPTION_INFO" pattern="%ex{full}" isClob="true" />
+        </JDBC>
+    </Appenders>
+
+    <Loggers>
+        <!-- Root Logger -->
+        <Root level="debug">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="dbLogsStore"/>
+        </Root>
+    </Loggers>
+</Configuration>

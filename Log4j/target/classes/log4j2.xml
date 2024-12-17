@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <!-- Console Appender (logs INFO, DEBUG, ERROR to console) -->
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+
+        <!-- JDBC Appender (logs ERROR level only to database) -->
+        <JDBC name="dbLogsStore" tableName="TRANSACTION_ERROR_LOG">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <ConnectionFactory class="com.demo.log4j.config.ConnectionFactory" method="getDatabaseConnection" />
+            <Column name="LOG_ID" literal="1" />
+            <Column name="CREATED_DATE" literal="CURRENT_TIMESTAMP" />
+            <Column name="CLASS_INFO" pattern="%logger" />
+            <Column name="LOGGER_LEVEL" pattern="%level" />
+            <Column name="MESSAGE" pattern="%message" isClob="true" />
+            <Column name="EXCEPTION_INFO" pattern="%ex{full}" isClob="true" />
+        </JDBC>
+        <!-- JDBC Appender for Oracle -->
+        <!--<JDBC name="DatabaseAppender" tableName="TRANSACTION_ERROR_LOGS_TEST">
+            <ConnectionFactory class="org.apache.logging.log4j.core.appender.db.jdbc.DriverManagerConnectionSource">
+                <Property name="url">jdbc:oracle:thin:@localhost:1521</Property> &lt;!&ndash; Replace with your DB URL &ndash;&gt;
+                <Property name="user">SYSTEM</Property> &lt;!&ndash; DB Username &ndash;&gt;
+                <Property name="password">HR</Property> &lt;!&ndash; DB Password &ndash;&gt;
+                <Property name="driverClassName">oracle.jdbc.OracleDriver</Property>
+            </ConnectionFactory>
+            <ColumnMappings>
+                <ColumnMapping columnName="LOG_ID" literal="1" />
+                <ColumnMapping columnName="CREATED_DATE" pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}" />
+                <ColumnMapping columnName="ERROR_LEVEL" pattern="%level" />
+                <ColumnMapping columnName="LOGGER" pattern="%logger" />
+                <ColumnMapping columnName="MESSAGE" pattern="%message" />
+                <ColumnMapping columnName="EXCEPTION_BLOCK" pattern="%ex{full}" />
+            </ColumnMappings>
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+        </JDBC>-->
+
+    </Appenders>
+
+    <Loggers>
+        <!-- Root Logger -->
+        <Root level="debug">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="dbLogsStore"/>
+        </Root>
+    </Loggers>
+</Configuration>
